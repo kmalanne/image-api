@@ -1,9 +1,8 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
-import * as uuidv1 from 'uuid/v1';
+import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import { connectToDatabase } from './db';
-import { generateRandomCode } from './utils';
+import { generateCode, generateUuid } from './utils';
 
-export const poll = async (): Promise<any> => {
+export const poll: APIGatewayProxyHandler = async () => {
   await connectToDatabase();
   return {
     statusCode: 200,
@@ -11,13 +10,13 @@ export const poll = async (): Promise<any> => {
   };
 };
 
-export const createAlbum = async () => {
+export const createAlbum: APIGatewayProxyHandler = async () => {
   try {
-    const code = generateRandomCode();
-    const uuid = uuidv1();
-    const connection = await connectToDatabase();
+    const code = generateCode();
+    const uuid = generateUuid();
 
-    const [rows] = await connection.execute('INSERT INTO album(code, uuid) VALUES(?, ?)', [
+    const connection = await connectToDatabase();
+    const [rows, fields] = await connection.execute(`INSERT INTO album(code, uuid) VALUES(?, ?)`, [
       code,
       uuid,
     ]);
@@ -43,10 +42,32 @@ export const createImage: APIGatewayProxyHandler = async () => {
   };
 };
 
-export const getImages: APIGatewayProxyHandler = async () => {
-  console.log('TODO');
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ message: 'TODO' }),
-  };
+export const getImages: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) => {
+  try {
+    const id = event.pathParameters.id;
+    const cursor = event.queryStringParameters.cursor;
+    const limit = event.queryStringParameters.limit;
+
+    const connection = await connectToDatabase();
+    const [rows, fields] = await connection.execute(
+      `SELECT image.id AS id, thumbnail_url, preview_url 
+       FROM album
+       LEFT JOIN image ON image.album = album.id 
+       WHERE album.id = ? AND image.id > ? 
+       ORDER BY image.id ASC 
+       LIMIT ?`,
+      [id, cursor, limit]
+    );
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(rows),
+    };
+  } catch (err) {
+    return {
+      statusCode: err.statusCode || 500,
+      headers: { 'Content-Type': 'text/plain' },
+      body: 'Could not fetch the images.',
+    };
+  }
 };
