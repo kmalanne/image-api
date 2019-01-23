@@ -1,0 +1,71 @@
+service:
+  name: image-api
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+custom:
+  secrets: ${file(secrets.json)}
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  timeout: 30
+  stage: ${self:custom.secrets.NODE_ENV}
+  environment:
+    NODE_ENV: ${self:custom.secrets.NODE_ENV}
+    DB_NAME: ${self:custom.secrets.DB_NAME}
+    DB_USER: ${self:custom.secrets.DB_USER}
+    DB_PASSWORD: ${self:custom.secrets.DB_PASSWORD}
+    DB_HOST: ${self:custom.secrets.DB_HOST}
+    DB_PORT: ${self:custom.secrets.DB_PORT}
+  vpc:
+    securityGroupIds:
+      - ${self:custom.secrets.SECURITY_GROUP_ID}
+    subnetIds:
+      - ${self:custom.secrets.SUBNET1_ID}
+      - ${self:custom.secrets.SUBNET2_ID}
+      - ${self:custom.secrets.SUBNET3_ID}
+      - ${self:custom.secrets.SUBNET4_ID}
+
+functions:
+  poll:
+    handler: src/handler.poll
+    events:
+      - http:
+          path: /
+          method: get
+          cors: true
+  createAlbum:
+    handler: src/handler.createAlbum
+    events:
+      - http:
+          path: albums
+          method: post
+          cors: true
+  createImage:
+    handler: src/handler.createImage
+    events:
+      - http:
+          path: albums/{id}/images
+          method: post
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
+  getImages:
+    handler: src/handler.getImages
+    events:
+      - http:
+          path: albums/{id}/images
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
+              querystrings:
+                limit: true
+                cursor: true
