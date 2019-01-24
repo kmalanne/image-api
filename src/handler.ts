@@ -2,7 +2,7 @@ import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
 import { connectToDatabase } from './db';
 import { generateCode, generateUuid } from './utils';
 
-export const poll: APIGatewayProxyHandler = async () => {
+export const healthCheck: APIGatewayProxyHandler = async () => {
   await connectToDatabase();
   return {
     statusCode: 200,
@@ -16,7 +16,7 @@ export const createAlbum: APIGatewayProxyHandler = async () => {
     const uuid = generateUuid();
 
     const connection = await connectToDatabase();
-    const [rows, fields] = await connection.execute(`INSERT INTO album(code, uuid) VALUES(?, ?)`, [
+    const [rows] = await connection.execute(`INSERT INTO album(code, uuid) VALUES(?, ?)`, [
       code,
       uuid,
     ]);
@@ -49,7 +49,7 @@ export const getImages: APIGatewayProxyHandler = async (event: APIGatewayProxyEv
     const limit = event.queryStringParameters.limit;
 
     const connection = await connectToDatabase();
-    const [rows, fields] = await connection.execute(
+    const [rows] = await connection.execute(
       `SELECT image.id AS id, thumbnail_url, preview_url 
        FROM album
        LEFT JOIN image ON image.album = album.id 

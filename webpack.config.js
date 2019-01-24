@@ -1,5 +1,6 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
+const nodeExternals = require('webpack-node-externals');
 
 const entries = {};
 
@@ -11,6 +12,7 @@ module.exports = {
   mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
   entry: entries,
   devtool: 'source-map',
+  externals: [nodeExternals()],
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
   },
@@ -25,5 +27,8 @@ module.exports = {
       // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
       { test: /\.tsx?$/, loader: 'ts-loader' },
     ],
+  },
+  optimization: {
+    minimize: false,
   },
 };

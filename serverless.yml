@@ -1,12 +1,10 @@
 service:
   name: image-api
 
-plugins:
-  - serverless-webpack
-  - serverless-offline
-
 custom:
   secrets: ${file(secrets.json)}
+  webpack:
+    includeModules: true
 
 provider:
   name: aws
@@ -27,11 +25,10 @@ provider:
       - ${self:custom.secrets.SUBNET1_ID}
       - ${self:custom.secrets.SUBNET2_ID}
       - ${self:custom.secrets.SUBNET3_ID}
-      - ${self:custom.secrets.SUBNET4_ID}
 
 functions:
-  poll:
-    handler: src/handler.poll
+  healthCheck:
+    handler: src/handler.healthCheck
     events:
       - http:
           path: /
@@ -69,3 +66,7 @@ functions:
               querystrings:
                 limit: true
                 cursor: true
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
