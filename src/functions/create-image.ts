@@ -7,6 +7,8 @@ export const main: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) 
   try {
     const data = JSON.parse(event.body);
 
+    let encodedImage = data.image;
+
     const connection = await connectToDatabase();
 
     return success({ message: 'TODO' });
