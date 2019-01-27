@@ -11,6 +11,12 @@ provider:
   runtime: nodejs8.10
   timeout: 30
   stage: ${self:custom.secrets.NODE_ENV}
+  region: eu-north-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource: 'arn:aws:s3:::${self:custom.secrets.S3_BUCKET_NAME}/*'
   environment:
     NODE_ENV: ${self:custom.secrets.NODE_ENV}
     DB_NAME: ${self:custom.secrets.DB_NAME}
@@ -28,21 +34,21 @@ provider:
 
 functions:
   healthCheck:
-    handler: src/handler.healthCheck
+    handler: src/functions/health-check.main
     events:
       - http:
           path: /
           method: get
           cors: true
   createAlbum:
-    handler: src/handler.createAlbum
+    handler: src/functions/create-album.main
     events:
       - http:
           path: albums
           method: post
           cors: true
   createImage:
-    handler: src/handler.createImage
+    handler: src/functions/create-image.main
     events:
       - http:
           path: albums/{id}/images
@@ -53,7 +59,7 @@ functions:
               paths:
                 id: true
   getImages:
-    handler: src/handler.getImages
+    handler: src/functions/get-images.main
     events:
       - http:
           path: albums/{id}/images

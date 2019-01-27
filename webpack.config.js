@@ -9,10 +9,17 @@ Object.keys(slsw.lib.entries).forEach(
 );
 
 module.exports = {
-  mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
   entry: entries,
+  target: 'node',
+  mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
   devtool: 'source-map',
   externals: [nodeExternals()],
+  optimization: {
+    minimize: false,
+  },
+  performance: {
+    hints: false,
+  },
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
   },
@@ -21,14 +28,7 @@ module.exports = {
     path: path.join(__dirname, '.webpack'),
     filename: '[name].js',
   },
-  target: 'node',
   module: {
-    rules: [
-      // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
-      { test: /\.tsx?$/, loader: 'ts-loader' },
-    ],
-  },
-  optimization: {
-    minimize: false,
+    rules: [{ test: /\.tsx?$/, loader: 'ts-loader' }],
   },
 };
