@@ -1,17 +1,20 @@
 import * as sharp from 'sharp';
 
-export const resizeImage = (image: string, width: number, height: number): Promise<object> => {
+export const resizeImage = async (
+  image: string,
+  width: number,
+  height: number
+): Promise<string> => {
   const imageBuffer = Buffer.from(image.split(';base64,').pop(), 'base64');
 
-  return new Promise((res, rej) =>
-    sharp(imageBuffer)
+  try {
+    const resizedImage = await sharp(imageBuffer)
       .resize(width, height, { fit: 'inside' })
-      .toBuffer()
-      .then(data => {
-        return res({
-          data,
-        });
-      })
-      .catch(err => rej(err))
-  );
+      .toBuffer();
+
+    return resizedImage;
+  } catch (err) {
+    console.log(`Image resize failed: ${err.message}`);
+    throw new Error(err);
+  }
 };

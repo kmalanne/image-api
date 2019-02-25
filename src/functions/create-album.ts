@@ -1,6 +1,6 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import * as crypto from 'crypto';
-import * as uuidv1 from 'uuid/v1';
+import { v1 } from 'uuid';
 import { connectToDatabase } from '../db';
 import { createAlbum } from '../S3-handler';
 import { success, failure } from '../libs';
@@ -8,7 +8,7 @@ import { success, failure } from '../libs';
 export const main: APIGatewayProxyHandler = async () => {
   try {
     const code = crypto.randomBytes(8).toString('hex');
-    const uuid = uuidv1();
+    const uuid = v1();
 
     await createAlbum(code);
 
