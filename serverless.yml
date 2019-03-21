@@ -11,7 +11,7 @@ provider:
   runtime: nodejs8.10
   timeout: 30
   stage: ${self:custom.secrets.NODE_ENV}
-  region: eu-north-1
+  region: us-east-2
   iamRoleStatements:
     - Effect: Allow
       Action:

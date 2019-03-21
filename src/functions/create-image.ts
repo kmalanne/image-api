@@ -6,8 +6,12 @@ import { createImage } from '../S3-handler';
 import { success, failure } from '../libs';
 
 export const main: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) => {
+  const data = JSON.parse(event.body);
+
+  console.log('Called function create-image with body:');
+  console.log(data);
+
   try {
-    const data = JSON.parse(event.body);
     const encodedImage = data.image;
     const albumId = data.albumId;
 
@@ -30,6 +34,8 @@ export const main: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) 
       `INSERT INTO image(album, thumbnail_url, previewUrl) VALUES(?, ?, ?)`,
       [albumId, thumbnailURL, previewURL]
     );
+
+    console.log(`Function create-image finished: ${rows}`);
 
     return success(rows);
   } catch (err) {

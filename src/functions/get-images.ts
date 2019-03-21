@@ -3,6 +3,9 @@ import { connectToDatabase } from '../db';
 import { success, failure } from '../libs';
 
 export const main: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) => {
+  console.log(`Called function get-images with params:`);
+  console.log(JSON.stringify(event, null, 2));
+
   try {
     const id = event.pathParameters.id;
     const cursor = event.queryStringParameters.cursor;
@@ -18,6 +21,8 @@ export const main: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) 
        LIMIT ?`,
       [id, cursor, limit]
     );
+
+    console.log(`Function get-images finished`);
 
     return success(rows);
   } catch (err) {
