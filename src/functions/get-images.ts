@@ -22,7 +22,7 @@ export const main: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) 
       [id, cursor, limit]
     );
 
-    console.log(`Function get-images finished`);
+    console.log(`Function get-images finished:`, rows);
 
     return success(rows);
   } catch (err) {

@@ -3,10 +3,10 @@ import { createConnection, Connection } from 'mysql2/promise';
 let connection: Connection = undefined;
 
 export const connectToDatabase = async (): Promise<Connection> => {
-  console.log('Connecting to database');
+  console.log('Connecting to database...');
 
   if (connection === undefined) {
-    console.log('Connection not found, creating new');
+    console.log('Connection not found, creating new.');
 
     connection = await createConnection({
       host: process.env.DB_HOST,
@@ -17,6 +17,6 @@ export const connectToDatabase = async (): Promise<Connection> => {
     });
   }
 
-  console.log('Connection successful');
+  console.log('Connection successful!');
   return connection;
 };

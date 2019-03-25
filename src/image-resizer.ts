@@ -5,7 +5,7 @@ export const resizeImage = async (
   width: number,
   height: number
 ): Promise<string> => {
-  console.log('Resizing image');
+  console.log('Resizing image.');
 
   const imageBuffer = Buffer.from(image.split(';base64,').pop(), 'base64');
 
@@ -14,7 +14,7 @@ export const resizeImage = async (
       .resize(width, height, { fit: 'inside' })
       .toBuffer();
 
-    console.log('Image resize successful');
+    console.log('Image resize successful!');
 
     return resizedImage;
   } catch (err) {

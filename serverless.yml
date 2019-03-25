@@ -60,6 +60,18 @@ functions:
             parameters:
               paths:
                 id: true
+  getAlbum:
+    handler: src/functions/get-album.main
+    events:
+      - http:
+          path: albums
+          method: get
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                code: false
+                uuid: false
   getImages:
     handler: src/functions/get-images.main
     events:
