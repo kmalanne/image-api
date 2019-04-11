@@ -4,10 +4,10 @@ export const resizeImage = async (
   image: string,
   width: number,
   height: number
-): Promise<string> => {
+): Promise<Buffer> => {
   console.log('Resizing image.');
 
-  const imageBuffer = Buffer.from(image.split(';base64,').pop(), 'base64');
+  const imageBuffer = new Buffer(image.split(';base64,').pop(), 'base64');
 
   try {
     const resizedImage = await sharp(imageBuffer)
@@ -18,7 +18,7 @@ export const resizeImage = async (
 
     return resizedImage;
   } catch (err) {
-    console.error(`Image resize failed: ${err.message}`);
+    console.error(`Image resize failed: ${err}`);
     throw new Error(err);
   }
 };

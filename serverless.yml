@@ -16,8 +16,10 @@ provider:
     - Effect: Allow
       Action:
         - s3:PutObject
-      Resource: 'arn:aws:s3:::${self:custom.secrets.S3_BUCKET_NAME}/*'
+      Resource: 'arn:aws:s3:::${self:custom.secrets.S3_BUCKET_NAME}'
   environment:
+    ACCESS_KEY_ID: ${self:custom.secrets.ACCESS_KEY_ID},
+    SECRET_ACCESS_KEY: ${self:custom.secrets.SECRET_ACCESS_KEY},
     NODE_ENV: ${self:custom.secrets.NODE_ENV}
     DB_NAME: ${self:custom.secrets.DB_NAME}
     DB_USER: ${self:custom.secrets.DB_USER}
