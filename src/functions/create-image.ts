@@ -74,7 +74,6 @@ const createImage = async (album: string, imageName: string, image: Buffer): Pro
       .putObject({
         Bucket: bucket,
         Key: key,
-        ACL: 'public-read',
         Body: image,
       })
       .promise();
