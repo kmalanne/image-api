@@ -1,11 +1,11 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 import { v1 } from 'uuid';
-import { connectToDatabase } from '../db';
-import { success, failure } from '../libs';
+import { connectToDatabase } from '../util/db';
+import { success, failure } from '../util/response';
 
-export const main: APIGatewayProxyHandler = async () => {
-  console.log('Called function create-album.');
+export const createAlbum: APIGatewayProxyHandler = async () => {
+  console.log('Called function createAlbum.');
 
   try {
     const code = crypto.randomBytes(8).toString('hex');
@@ -17,7 +17,7 @@ export const main: APIGatewayProxyHandler = async () => {
       uuid,
     ]);
 
-    console.log(`Function create-album finished:`, rows);
+    console.log(`Function createAlbum finished:`, rows);
 
     return success({ id: (rows as any).insertId, code, uuid });
   } catch (err) {

@@ -1,18 +1,18 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { connectToDatabase } from '../db';
-import { success, failure } from '../libs';
+import { connectToDatabase } from '../util/db';
+import { success, failure } from '../util/response';
 
-export const main: APIGatewayProxyHandler = async () => {
-  console.log('Called function health-check.');
+export const healthCheck: APIGatewayProxyHandler = async () => {
+  console.log('Called function healthCheck.');
 
   try {
     await connectToDatabase();
 
-    console.log('Function health-check finished.');
+    console.log('Function healthCheck finished.');
 
-    return success({ message: 'Connection successful!' });
+    return success({ message: 'Health check OK!' });
   } catch (err) {
     console.log(err);
-    return failure(err.statusCode, { error: 'Connection failed.' });
+    return failure(err.statusCode, { error: 'Health check FAILED.' });
   }
 };

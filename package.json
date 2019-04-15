@@ -1,16 +1,24 @@
 {
   "name": "image-api",
   "version": "1.0.0",
-  "description": "Serverless Typescript image manipulation API",
+  "description": "Serverless Typescript image gallery API",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kmalanne/image-api"
+  },
   "main": "handler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "watch-build": "tsc -w",
+    "dev": "npm run watch-build",
+    "lint": "tslint --format prose --project .",
+    "pre-deploy": "npm run build"
   },
   "dependencies": {
     "aws-sdk": "^2.437.0",
     "mysql2": "^1.6.5",
+    "shar": "^0.2.0",
     "sharp": "^0.22.0",
-    "source-map-support": "^0.5.6",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
@@ -18,18 +26,12 @@
     "@types/mysql2": "github:types/mysql2",
     "@types/node": "^8.0.57",
     "@types/sharp": "^0.22.1",
-    "eslint": "^5.3.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^3.6.0",
-    "eslint-plugin-import": "^2.15.0",
-    "eslint-plugin-prettier": "^3.0.1",
+    "@types/uuid": "^3.4.4",
     "prettier": "^1.16.1",
     "serverless-offline": "^4.1.3",
-    "serverless-webpack": "^5.1.1",
-    "ts-loader": "^4.2.0",
-    "typescript": "^2.9.2",
-    "webpack": "^4.5.0",
-    "webpack-node-externals": "^1.7.2"
+    "tslint": "^5.15.0",
+    "tslint-microsoft-contrib": "^6.1.0",
+    "typescript": "^3.4.3"
   },
   "author": "Kai-Mikael Alanne",
   "license": "MIT"

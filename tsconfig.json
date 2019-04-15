@@ -1,12 +1,21 @@
 {
   "compilerOptions": {
-    "lib": ["es2017"],
-    "moduleResolution": "node",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "sourceMap": true,
     "target": "es2017",
-    "outDir": "lib"
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["esnext"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "baseUrl": ".",
+    "rootDir": "src/",
+    "outDir": "dist",
+    "sourceMap": true,
+    "paths": {
+      "*": ["node_modules/*"]
+    }
   },
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"]
 }

@@ -1,11 +1,11 @@
 import { createConnection, Connection } from 'mysql2/promise';
 
-let connection: Connection = undefined;
+let connection: Connection;
 
 export const connectToDatabase = async (): Promise<Connection> => {
   console.log('Connecting to database...');
 
-  if (connection === undefined) {
+  if (!connection) {
     console.log('Connection not found, creating new.');
 
     connection = await createConnection({

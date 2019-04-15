@@ -3,8 +3,6 @@ service:
 
 custom:
   secrets: ${file(secrets.json)}
-  webpack:
-    includeModules: true
 
 provider:
   name: aws
@@ -36,23 +34,29 @@ provider:
       - ${self:custom.secrets.SUBNET2_ID}
       - ${self:custom.secrets.SUBNET3_ID}
 
+package:
+  exclude:
+    - './**'
+    - '!./node_modules/**'
+    - '!./dist/**'
+
 functions:
   healthCheck:
-    handler: src/functions/health-check.main
+    handler: dist/index.healthCheck
     events:
       - http:
           path: /
           method: get
           cors: true
   createAlbum:
-    handler: src/functions/create-album.main
+    handler: dist/index.createAlbum
     events:
       - http:
           path: albums
           method: post
           cors: true
   createImage:
-    handler: src/functions/create-image.main
+    handler: dist/index.createImage
     events:
       - http:
           path: albums/{id}/images
@@ -63,7 +67,7 @@ functions:
               paths:
                 id: true
   getAlbum:
-    handler: src/functions/get-album.main
+    handler: dist/index.getAlbum
     events:
       - http:
           path: albums
@@ -75,7 +79,7 @@ functions:
                 code: false
                 uuid: false
   getImages:
-    handler: src/functions/get-images.main
+    handler: dist/index.getImages
     events:
       - http:
           path: albums/{id}/images
@@ -90,5 +94,4 @@ functions:
                 cursor: true
 
 plugins:
-  - serverless-webpack
   - serverless-offline

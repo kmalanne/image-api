@@ -1,58 +1,41 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
-import * as AWS from 'aws-sdk';
 import { v1 } from 'uuid';
-import { connectToDatabase } from '../db';
-// import { resizeImage } from '../image-resizer';
-import { atob } from '../utils';
-import { success, failure } from '../libs';
+import { connectToDatabase } from '../util/db';
+import { resizeImage } from '../util/image-resizer';
+import { uploadFile } from '../util/s3';
+import { success, failure } from '../util/response';
 
-const accessKeyId = atob(process.env.ACCESS_KEY_ID);
-const secretAccessKey = atob(process.env.SECRET_ACCESS_KEY);
-
-const bucket = process.env.S3_BUCKET_NAME;
-const region = process.env.S3_BUCKET_REGION;
-
-const bucketURL = `https://s3-${region}.amazonaws.com/${bucket}`;
-
-const s3 = new AWS.S3({
-  apiVersion: '2006-03-01',
-  accessKeyId,
-  secretAccessKey,
-  region,
-});
-
-export const main: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) => {
+export const createImage: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) => {
   const albumId = event.pathParameters.id;
   const data = JSON.parse(event.body);
+  const encodedImage = data.image;
 
-  console.log(`Called function create-image with id: ${albumId}`);
+  console.log(`Called function createImage with id: ${albumId}`);
 
   try {
     const connection = await connectToDatabase();
     const [row] = await connection.execute(
-      `SELECT code 
+      `SELECT code
        FROM album
        WHERE album.id = ?`,
       [albumId]
     );
-    const albumName = row[0].code;
+    const albumName = (row as any)[0].code;
 
-    const encodedImage = data.image;
-    // const thumbnailImage = await resizeImage(encodedImage, 500, 500);
-    // const previewImage = await resizeImage(encodedImage, 1024, 768);
+    const thumbnailImage = await resizeImage(encodedImage, 500, 500);
+    const thumbnalImageFilename = `${albumName}/${v1()}`;
+    const thumbnailURL = await uploadFile(thumbnalImageFilename, thumbnailImage);
 
-    // const thumbnailURL = await createImage(albumName, v1(), thumbnailImage);
-    // const previewURL = await createImage(albumName, v1(), previewImage);
-    const image = new Buffer(encodedImage.split(';base64,').pop(), 'base64');
-    const thumbnailURL = await createImage(albumName, v1(), image);
-    const previewURL = await createImage(albumName, v1(), image);
+    const previewImage = await resizeImage(encodedImage, 1024, 768);
+    const previewImageFilename = `${albumName}/${v1()}`;
+    const previewURL = await uploadFile(previewImageFilename, previewImage);
 
     const [rows] = await connection.execute(
       `INSERT INTO image(album, thumbnail_url, preview_url) VALUES(?, ?, ?)`,
       [albumId, thumbnailURL, previewURL]
     );
 
-    console.log(`Function create-image finished:`, rows);
+    console.log(`Function createImage finished:`, rows);
 
     return success({
       id: (rows as any).insertId,
@@ -61,28 +44,5 @@ export const main: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) 
     });
   } catch (err) {
     return failure(err.statusCode, { error: 'Could not create the image.' });
-  }
-};
-
-const createImage = async (album: string, imageName: string, image: Buffer): Promise<string> => {
-  const key = `${album}/${imageName}`;
-
-  console.log(`Creating image ${key} to S3 (${bucket})`);
-
-  try {
-    const response = await s3
-      .putObject({
-        Bucket: bucket,
-        Key: key,
-        Body: image,
-      })
-      .promise();
-
-    console.log(`Image created to S3`, response);
-
-    return `${bucketURL}/${key}`;
-  } catch (err) {
-    console.error(`Could not create image to S3: ${err}`);
-    throw new Error(err);
   }
 };

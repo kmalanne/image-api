@@ -1,0 +1,16 @@
+{
+  "extends": "tslint:recommended",
+  "rulesDirectory": "tslint-microsoft-contrib",
+  "rules": {
+    "quotemark": [true, "single", "avoid-escape"],
+    "ordered-imports": [false],
+    "object-literal-sort-keys": false,
+    "no-console": false,
+    "trailing-comma": [
+      true,
+      {
+        "functions": "never"
+      }
+    ]
+  }
+}

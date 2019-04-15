@@ -1,24 +1,23 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda';
-import { connectToDatabase } from '../db';
-import { success, failure } from '../libs';
+import { connectToDatabase } from '../util/db';
+import { success, failure } from '../util/response';
 
-export const main: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) => {
-  console.log(`Called function get-album with params:`);
-  console.log(JSON.stringify(event, null, 2));
+export const getAlbum: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) => {
+  const code = event.queryStringParameters.code ? event.queryStringParameters.code : '';
+  const uuid = event.queryStringParameters.uuid ? event.queryStringParameters.uuid : '';
+
+  console.log(`Called function getAlbum with params code: ${code}, uuid: ${uuid}`);
 
   try {
-    const code = event.queryStringParameters.code ? event.queryStringParameters.code : '';
-    const uuid = event.queryStringParameters.uuid ? event.queryStringParameters.uuid : '';
-
     const connection = await connectToDatabase();
     const [rows] = await connection.execute(
-      `SELECT id 
-       FROM album 
+      `SELECT id
+       FROM album
        WHERE album.code = ? OR album.uuid = ?`,
       [code, uuid]
     );
 
-    console.log(`Function get-album finished:`, rows);
+    console.log(`Function getAlbum finished:`, rows);
 
     return success(rows);
   } catch (err) {
