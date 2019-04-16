@@ -1,11 +1,16 @@
 interface IResponse {
   statusCode: number;
+  headers?: any;
   body: string;
 }
 
 const buildResponse = (statusCode: number, body: object): IResponse => {
   return {
     statusCode,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+    },
     body: JSON.stringify(body),
   };
 };

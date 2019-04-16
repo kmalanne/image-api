@@ -14,7 +14,7 @@ export const getImages: APIGatewayProxyHandler = async (event: APIGatewayProxyEv
   try {
     const connection = await connectToDatabase();
     const [rows] = await connection.execute(
-      `SELECT image.id AS id, thumbnail_url, preview_url
+      `SELECT image.id AS id, thumbnail_url AS thumbnailURL, preview_url AS previewURL
        FROM album
        LEFT JOIN image ON image.album = album.id
        WHERE album.id = ? AND image.id > ?
